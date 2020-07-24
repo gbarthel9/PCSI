@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
 
-from SSIM_Dir.ssim_map import cal_ssim
+from ssim_map import cal_ssim
 import argparse
+from pcsiSimulatorFunc import pcsiSimulator
 import numpy as np
 from scipy.optimize import minimize
 
-def costFunc(imgOrig, cc, b, np, ba, outfolder, saveImages): #Where imgOrig is a parameter and parameters are the nummbers to be optimized
-
-   #Note bit value has to go by threes and they all have to be integers
-
-   #Call the pcsiSimulator and get img2 based on parameters. Do I have to iterate through parameters or will the opt function. Either way would it be in here?
-   
-   #img2 = pcsiSimulator(imgOrig, cc, b, np, ba, outfolder, saveImages) :
-
-   #costFunc = 1 - (cal_ssim(imgOrig, img2)[0]) #want the first thing in the list that is returned
-    pass
-    return 0
+def costFunc(imgOrig, cc, b, numP, ba, outfolder, saveImages): #Where imgOrig, ba, outfolder, and saveImages are parameters not variables
+    # Returns array of image data 
+    img2 = pcsiSimulator(imgOrig, cc, b, numP, ba, outfolder, saveImages) 
+    ssimVal = (cal_ssim(imgOrig, img2)[0]) #Want the first thing in the list that is returned
+    return ssimVal
 
 def main():
     #Read the command line for
     #	The image being used
     #	The parameter ranges being testrd
     #	The iteration in those ranges (could also do this explicitly with an array)
-    parser = argparse.ArgumentParser(description="Command line tool for optimizing parameters of PCSI", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description="Command line tool creating matrix of output data for PCSI parameter tests", 
+                        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-i", "--imagefile", type=str, default='HAB2sstv.bmp',
                         help="Input image to transmit (24bit color, any filetype)")
     parser.add_argument("-b", "--bitdepthrange", type=int, default=[12,24,3], nargs='*',
@@ -34,27 +30,28 @@ def main():
     parser.add_argument("-a", "--bitsAvailable", type=int, default=1992,
                         help="Number of bits available in payload for image data")
     args = parser.parse_args()
+
+    #NOTE: Range operates on integers only
+    bdr = range(args.bitdepthrange[0], args.bitdepthrange[1]+1, args.bitdepthrange[2])
+    npr = range(args.numpacketsrange[0], args.numpacketsrange[1]+1, args.numpacketsrange[2])
+    ccr = range(args.chromacomprange[0], args.chromacomprange[1]+1, args.chromacomprange[2])
     
-    #Constrained Optimization: In python you can pass functions so likely you will pass the function to minimize
-    #b0 = np.mean(bitdepthrange[0], bitdephtrange[1])
-    #cc0 = np.mean(chromacomprange[0], chromacomprange[1])
-    #np0 = np.mean(numpacketsrange[0], numpacketsrange[1])
-    #x0 = [cc0, b0, np0]
-
-    #PROBLEM: could make other parameters that don't need to be optimized global or I could find a way
-    #to pass them like parameters in Matlab
-
-    #answer = minimize(costFunc,x0, method='', options={})
-
-    #Print the result
-    #print(answer)
+    ssimDataMtrx = np.zeros((len(bdr), len(npr), len(ccr)))
+    print(ssimDataMtrx)
+    #Might want to use map in the future so it can be more concurrent for parallelizaiton
+    for i, b in enumerate(bdr):
+        for j, numP in enumerate(npr):
+            for k, cc in enumerate(ccr):
+                ssimDataMtrx[i][j][k] = costFunc(args.imagefile, b, [numP],[cc], args.bitsAvailable, "results_NA", False)
+    print(ssimDataMtrx)
     
+
     #Test:
-    s10, s11 = cal_ssim("HAB2sstv.bmp", "HAB2sstv.bmp")
-    s20, s21 = cal_ssim("HAB2sstv.bmp", "results_HAB2sstv/HAB2sstv150p_12b_20.bmp")
-    print(f"s10 is: {s10}")
+    #s10 = costFunc(args.imagefile, 24, [300], [4], args.bitsAvailable, "results_NA", False)
+    #s11 = costFunc(args.imagefile, 12, [150],[ 4], args.bitsAvailable, "results_NA", False)
+    #print(f"s10 is: {s10}")
     #print(f"s11 is: {s11}")
-    print(f"s20 is: {s20}")
+    #print(f"s20 is: {s20}")
     #print(f"s21 is: {s21}")
 
 

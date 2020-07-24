@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from ssim_map import cal_ssim
-import pcsiSimulator
+import pcsiSimulatorFunc
 import argparse
 import numpy as np
 from scipy.optimize import minimize
@@ -37,6 +37,8 @@ def main():
     args = parser.parse_args()
     
     #Constrained Optimization: In python you can pass functions so likely you will pass the function to minimize
+    #Initial Values for Optimization:
+
     #b0 = np.mean(bitdepthrange[0], bitdephtrange[1])
     #cc0 = np.mean(chromacomprange[0], chromacomprange[1])
     #np0 = np.mean(numpacketsrange[0], numpacketsrange[1])

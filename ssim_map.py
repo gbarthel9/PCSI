@@ -4,14 +4,15 @@ import cv2
 import numpy as np
 from scipy import signal
 
-def cal_ssim(img1Path, img2Path):
+def cal_ssim(img1Path, img2Mtrx): #(img1Path, img2Path):
     
-    # Assuming single channel images are read. For RGB image, uncomment the following commented lines
-    # Problem: there might even be no need to save the photos when running the optimization function but if they are not in the form of path names we need to figure out what form they are in before they saved to locations in the pcsi simulator
+    #Editor Note: Assuming single channel images are read. For RGB image, uncomment color convert lines
+    
+    #Attempt to pass image matrix 
     img1 = cv2.imread(img1Path,1)
     img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)   #DOES THIS INDEX ONLY LOOK AT GRAY VALUES?
-    img2 = cv2.imread(img2Path,1)                   #DOES IT CARE ABOUT COLOR?
-    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    #img2 = cv2.imread(img2Path,1)                  
+    img2 = cv2.cvtColor(img2Mtrx, cv2.COLOR_BGR2GRAY)
 
     K = [0.01, 0.03]
     L = 255

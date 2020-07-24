@@ -53,9 +53,9 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
 
             # create random sampling index vector
             k = sum(s)
-            if(k > nx * ny):
-                continue  # requested more pixels than in image
-                print(f"Request more pixels than in the image: {(nx*ny)} pixels in image: {k} requested");
+            #Requested more Pixels than in the image: NEED TO CONVERT TO PERCENTS AND DO AWAY WITH THIS
+            if(k > nx * ny):    
+                raise ValueError(f"Request more pixels than in the image: {(nx*ny)} pixels in image: {k} requested") 
             ritotal = np.random.choice(nx * ny, k, replace=False) # random sample of indices
 
             # for each color channel
@@ -92,7 +92,7 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
 
             #Z[i][:,:,:] = ycbcr2rgb(Z[i][:,:,:])  
             Z[i][:,:,:] = cv2.cvtColor(Z[i][:,:,:], cv2.COLOR_YCrCb2BGR)
-            
+            #print(Z[i][:,:,:])
 
             #Have to figure out what this is ^ so I can return the proper thing for my SSIM calculator
             
@@ -102,11 +102,13 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
                             + str(chromaCompression) +'.bmp', Z[i])
                 
                 #Return String of the new file name
-                return (outfolder + '/' + imagefileName + str(numberPackets[i]) +'p_'
-                            + str(transmittedColorDepth) + 'b_'
-                            + str(chromaCompression) +'.bmp')
-
-            #return Z[i]? Or I can just suck it up and return the name of the file
+                #return (outfolder + '/' + imagefileName + str(numberPackets[i]) +'p_'
+                #            + str(transmittedColorDepth) + 'b_'
+                #            + str(chromaCompression) +'.bmp')
+            
+            #Return people makes multiple image run useless if saveOutputFiles == False
+            else:
+                return (Z[i][:,:,:])
 
 if __name__=="__main__":
 
