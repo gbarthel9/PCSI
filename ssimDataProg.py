@@ -5,6 +5,7 @@ import argparse
 from pcsiSimulatorFunc import pcsiSimulator
 import numpy as np
 from scipy.optimize import minimize
+import scipy.io
 import csv
 
 def costFunc(imgOrig, cc, b, numP, ba, outfolder, saveImages): #Where imgOrig, ba, outfolder, and saveImages are parameters not variables
@@ -44,8 +45,17 @@ def main():
         for j, numP in enumerate(npr):
             for k, cc in enumerate(ccr):
                 ssimDataMtrx[i][j][k] = costFunc(args.imagefile, b, [numP],[cc], args.bitsAvailable, "results_NA", False)
-    #print(ssimDataMtrx)    
+    print(ssimDataMtrx)    
     
+    #Matlab file output:
+    matLabDic = {"cc" : ccr, 
+                 "bd": bdr,
+                 "np": npr,
+                 "ssimData": ssimDataMtrx}
+    scipy.io.savemat('ssimData.mat', matLabDic)
+    
+
+    """OUTPUT TEXT FILE
     with open("ssimData.csv", 'w') as csvfile:
         csvfile.write(f'Bit Depth Values: {bdr}\n')
         csvfile.write(f'NumPackets Values: {npr}\n')
@@ -53,6 +63,6 @@ def main():
         csvfile.write('SSIM Data:\n')
         writer = csv.writer(csvfile, delimiter=",")
         writer.writerows(ssimDataMtrx)
-
+    """
 if __name__ == "__main__":
     main()
