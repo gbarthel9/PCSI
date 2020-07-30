@@ -34,11 +34,11 @@ def main():
     args = parser.parse_args()
 
     #NOTE: Range operates on integers only
-    bdr = list(range(args.bitdepthrange[0], args.bitdepthrange[1]+1, args.bitdepthrange[2]))
-    npr = list(range(args.numpacketsrange[0], args.numpacketsrange[1]+1, args.numpacketsrange[2]))
-    ccr = list(range(args.chromacomprange[0], args.chromacomprange[1]+1, args.chromacomprange[2]))
+    bdr = np.array(range(args.bitdepthrange[0], args.bitdepthrange[1]+1, args.bitdepthrange[2]))
+    npr = np.array(range(args.numpacketsrange[0], args.numpacketsrange[1]+1, args.numpacketsrange[2]))
+    ccr = np.array(range(args.chromacomprange[0], args.chromacomprange[1]+1, args.chromacomprange[2]))
     
-    ssimDataMtrx = np.zeros((len(bdr), len(npr), len(ccr)))
+    ssimDataMtrx = np.zeros((len(bdr), len(npr), len(ccr))) #Pythonic len() works with 1st dimension of numpy arrays
     #print(ssimDataMtrx)
     #Might want to use map in the future so it can be more concurrent for parallelizaiton
     for i, b in enumerate(bdr):
@@ -48,9 +48,9 @@ def main():
     print(ssimDataMtrx)    
     
     #Matlab file output:
-    matLabDic = {"cc" : ccr, 
-                 "bd": bdr,
+    matLabDic = {"bd": bdr,
                  "np": npr,
+                 "cc": ccr,
                  "ssimData": ssimDataMtrx}
     scipy.io.savemat('ssimData.mat', matLabDic)
     
@@ -66,3 +66,4 @@ def main():
     """
 if __name__ == "__main__":
     main()
+
