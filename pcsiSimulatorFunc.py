@@ -49,13 +49,17 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
         Z = [np.zeros(Xorig.shape, dtype='uint8') for s in sampleSizes]
         masks = [np.zeros(Xorig.shape, dtype='uint8') for s in sampleSizes]
 
+        #Calling each set of parameters one a time makes this loop below not neccesary
+
         for i,s in enumerate(sampleSizes):
 
             # create random sampling index vector
             k = sum(s)
             #Requested more Pixels than in the image: NEED TO CONVERT TO PERCENTS AND DO AWAY WITH THIS
             if(k > nx * ny):    
-                raise ValueError(f"Request more pixels than in the image: {(nx*ny)} pixels in image: {k} requested") 
+                print("asked for more pixels than there are present")
+                return (np.zeros(5), False)
+                #raise ValueError(f"Request more pixels than in the image: {(nx*ny)} pixels in image: {k} requested") 
             ritotal = np.random.choice(nx * ny, k, replace=False) # random sample of indices
 
             # for each color channel
@@ -72,8 +76,7 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
                 # simulate color depth transmitted
                 X = np.around(
                         np.around(X /(2**8-1) * (2**(transmittedColorDepth/3)-1))
-                        / (2**(transmittedColorDepth/3)-1) * (2**8-1)
-                        )
+                        / (2**(transmittedColorDepth/3)-1) * (2**8-1))
                 X[X>255] = 255
                 # X = (X>>bitDepthToRemove)<<bitDepthToRemove
                 # X = np.around(X / ((2**8)-1) * ((2**(transmittedColorDepth/3))-1))
@@ -108,7 +111,7 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
             
             #Return people makes multiple image run useless if saveOutputFiles == False
             else:
-                return (Z[i][:,:,:])
+                return ((Z[i][:,:,:]), True)
 
 if __name__=="__main__":
 

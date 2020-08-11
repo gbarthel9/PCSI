@@ -11,8 +11,11 @@ import csv
 def costFunc(imgOrig, cc, b, numP, ba, outfolder, saveImages): #Where imgOrig, ba, outfolder, and saveImages are parameters not variables
     # Returns array of image data 
     img2 = pcsiSimulator(imgOrig, cc, b, numP, ba, outfolder, saveImages) 
-    ssimVal = (cal_ssim(imgOrig, img2)[0]) #Want the first thing in the list that is returned
-    return ssimVal
+    if img2[1] is False:
+        return 0
+    else:
+        ssimVal = (cal_ssim(imgOrig, img2[0])[0]) #Want the first thing in the list that is returned
+        return ssimVal
 
 def main():
     #Read the command line for
