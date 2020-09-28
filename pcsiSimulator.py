@@ -16,7 +16,7 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description="Command line tool to simulate PCSI",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-i", "--imagefile", type=str, default='HAB2sstv.bmp',
+    parser.add_argument("-i", "--imagefile", type=str, default='OrignalImages/HAB2sstv.bmp',
                         help="Input image to transmit (24bit color, any filetype)")
     parser.add_argument("-b", "--bitdepth", type=int, default=12,
                         help="Bit depth transmit (e.g., 24 for 24-bit color)")
@@ -43,12 +43,16 @@ if __name__=="__main__":
     # read original image
     Xorig = imageio.imread(args.imagefile)
 
-    imagefileName, ext = args.imagefile.split('.')
-    if not os.path.exists('results_' + imagefileName):
-        os.makedirs('results_' + imagefileName)
-
-    if not os.path.exists(args.outfolder):
-        os.makedirs(args.outfolder)
+    imagefilePath, ext = args.imagefile.split('.')
+    imagefileName = imagefilePath.split('/')[-1]
+    print(imagefileName);
+    
+    if args.outfolder == "results":
+        if not os.path.exists('results_' + imagefileName):
+            os.makedirs('results_' + imagefileName)
+        args.outfolder = 'results_' + imagefileName
+    elif not os.path.exists(outfolder):
+        os.makedirs(outfolder)
 
     Xorig = cv2.cvtColor(Xorig, cv2.COLOR_BGR2YCrCb)  # opencv switchs b and r, so this works
     ny,nx,nchan = Xorig.shape
@@ -71,6 +75,7 @@ if __name__=="__main__":
             # create random sampling index vector
             k = sum(s)
             if(k > nx * ny):
+                print("Requested for more Pixels than there are present")
                 continue  # requested more pixels than in image
             ritotal = np.random.choice(nx * ny, k, replace=False) # random sample of indices
 

@@ -24,7 +24,7 @@ def main():
     #	The iteration in those ranges (could also do this explicitly with an array)
     parser = argparse.ArgumentParser(description="Command line tool creating matrix of output data for PCSI parameter tests", 
                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-i", "--imagefile", type=str, default='HAB2sstv.bmp',
+    parser.add_argument("-i", "--imagefile", type=str, default='OriginalImages/HAB2sstv.bmp',
                         help="Input image to transmit (24bit color, any filetype)")
     parser.add_argument("-b", "--bitdepthrange", type=int, default=[21,21,3], nargs='*',
                         help="Bit depth range to test and iteration step; should be mult of 3 (enter 9 24 3 for 9,12,...24)")
