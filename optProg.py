@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# This program is an optimization routine to find the optimal parameter values
+# that can be used to send an image through our pcsiSimulator (compressed sensing).
+# Status: Unfinished
+
 from ssim_map import cal_ssim
 import pcsiSimulatorFunc
 import argparse

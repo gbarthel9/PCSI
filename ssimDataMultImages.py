@@ -24,12 +24,14 @@ def main():
                         help="Chroma Compression ratio range to test and iteration step")
     parser.add_argument("-a", "--bitsAvailable", type=int, default=1992,
                         help="Number of bits available in payload for image data")
+    parser.add_argument("-s", "--saveOutputImages", type=int, default=0,
+                        help="1 to save output images, 0 to not save")
     args = parser.parse_args()
     
     for filename in os.listdir(args.imageDir):
         imgPath = os.path.join(args.imageDir, filename)
         print(imgPath)
-        ssimDataProg(imgPath, args.chromacomprange, args.bitdepthrange, args.numpacketsrange, args.bitsAvailable)
+        ssimDataProg(imgPath, args.chromacomprange, args.bitdepthrange, args.numpacketsrange, args.bitsAvailable, args.saveOutputImages)
 
 
 if __name__ == "__main__":

@@ -17,24 +17,19 @@ def costFunc(imgOrig, cc, b, numP, ba, outfolder, saveImages): #Where imgOrig, b
         ssimVal = (cal_ssim(imgOrig, img2[0])[0]) #Want the first thing in the list that is returned
         return ssimVal
 
-def ssimDataProg(imagefile, chromacomprange, bitdepthrange, numpacketsrange, bitsAvailable):
+def ssimDataProg(imagefile, chromacomprange, bitdepthrange, numpacketsrange, bitsAvailable, saveOutputImages):
 
-    #MAKING THIS PROGRAM FUNCTINOAL TO BE CALLED FROM ANOTHER PROGRAM CYCLING THROUGH IMAGES
-    #HAVE TO CHANGE FROM ARGS TO PARAMETERS PASSED TO THE FUNCTION
-
-
-    #NOTE: Range operates on integers only
+    #IMPORTANT: Range() operates on integers only
     bdr = np.array(range(bitdepthrange[0], bitdepthrange[1]+1, bitdepthrange[2]))
     npr = np.array(range(numpacketsrange[0], numpacketsrange[1]+1, numpacketsrange[2]))
     ccr = np.array(range(chromacomprange[0], chromacomprange[1]+1, chromacomprange[2]))
     
     ssimDataMtrx = np.zeros((len(bdr), len(npr), len(ccr))) #Pythonic len() works with 1st dimension of numpy arrays
-    #print(ssimDataMtrx)
     #Might want to use map in the future so it can be more concurrent for parallelizaiton
     for i, b in enumerate(bdr):
         for j, numP in enumerate(npr):
             for k, cc in enumerate(ccr):
-                ssimDataMtrx[i][j][k] = costFunc(imagefile, b, [numP],[cc], bitsAvailable, "results_NA", False)
+                ssimDataMtrx[i][j][k] = costFunc(imagefile, b, [numP],[cc], bitsAvailable, "results", saveOutputImages)
     print(ssimDataMtrx)    
     
     #Matlab file output:
@@ -42,7 +37,7 @@ def ssimDataProg(imagefile, chromacomprange, bitdepthrange, numpacketsrange, bit
                  "np": npr,
                  "cc": ccr,
                  "ssimData": ssimDataMtrx}
-    imgName = (imagefile.split('/')[-1]).split('.')[0]#imagefile is the full path, imgName is just name, no path, no extensions#imagefile is the full path, imgName is just name, no path, no extensions
+    imgName = (imagefile.split('/')[-1]).split('.')[0] #imagefile is the full path, imgName is just name, no path, no extensions
     scipy.io.savemat('ssimResults/ssimData' + imgName + '.mat', matLabDic)
     
 
@@ -73,8 +68,11 @@ if __name__ == "__main__":
                         help="Chroma Compression ratio range to test and iteration step")
     parser.add_argument("-a", "--bitsAvailable", type=int, default=1992,
                         help="Number of bits available in payload for image data")
+    parser.add_argument("-s", "--saveOutputImages", type=int, default=0,
+                        help="1 to save output images used in test, 0 to not save")
     args = parser.parse_args()
-
-    ssimDataProg(args.imagefile, args.chromacomprange, args.bitdepthrange, args.numpacketsrange, args.bitsAvailable)
+    #print(f"Value of saveOutputImages={args.saveOutputImages}")
+    
+    ssimDataProg(args.imagefile, args.chromacomprange, args.bitdepthrange, args.numpacketsrange, args.bitsAvailable, args.saveOutputImages)
 
     

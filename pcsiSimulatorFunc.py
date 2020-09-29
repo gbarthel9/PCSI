@@ -20,13 +20,12 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
     # read original image
     Xorig = imageio.imread(imagefile)
 
-    imagefileName, ext = imagefile.split('.')
-    #Create outfolders if neccesary
-    if outfolder == "results":
-        if not os.path.exists('results_' + imagefileName):
-            os.makedirs('results_' + imagefileName)
-        outfolder = 'results_' + imagefileName
-    elif not os.path.exists(outfolder):
+    # Modify imagefile for saving/writing
+    imagefilePath, ext = imagefile.split('.')
+    imagefileName = imagefilePath.split('/')[-1]
+
+    # Create outfolder if desired
+    if saveOutputFiles and not os.path.exists(outfolder):
         os.makedirs(outfolder)
 
     #Howard Changed this to cv2
@@ -43,7 +42,6 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
                                      transmittedColorDepth,
                                      chromaCompression,
                                      bitsAvailable) for n in numberPackets]
-        #print(sampleSizes)
         
         # for each sample size
         Z = [np.zeros(Xorig.shape, dtype='uint8') for s in sampleSizes]
@@ -99,25 +97,21 @@ def pcsiSimulator(imagefile, transmittedColorDepth, numberPackets, chromaCompres
 
             #Have to figure out what this is ^ so I can return the proper thing for my SSIM calculator
             
+            #If you want to save
             if saveOutputFiles:
                 imageio.imwrite(outfolder + '/' + imagefileName + str(numberPackets[i]) +'p_'
                             + str(transmittedColorDepth) + 'b_'
                             + str(chromaCompression) +'.bmp', Z[i])
-                
-                #Return String of the new file name
-                #return (outfolder + '/' + imagefileName + str(numberPackets[i]) +'p_'
-                #            + str(transmittedColorDepth) + 'b_'
-                #            + str(chromaCompression) +'.bmp')
-            
-            #Return people makes multiple image run useless if saveOutputFiles == False
-            else:
+
+            #If the program was called functionally
+            if __name__!= "__main__": 
                 return ((Z[i][:,:,:]), True)
 
 if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description="Command line tool to simulate PCSI",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-i", "--imagefile", type=str, default='HAB2sstv.bmp',
+    parser.add_argument("-i", "--imagefile", type=str, default='OriginalImages/HAB2sstv.bmp',
                         help="Input image to transmit (24bit color, any filetype)")
     parser.add_argument("-b", "--bitdepth", type=int, default=12,
                         help="Bit depth transmit (e.g., 24 for 24-bit color)")
@@ -130,8 +124,9 @@ if __name__=="__main__":
     parser.add_argument("-o", "--outfolder", type=str, default="results",
                         help="Output folder name")
     args = parser.parse_args()
-    
+
     #Main execution
+    
     pcsiSimulator(args.imagefile, args.bitdepth, args.numpackets, args.chromacomp, args.bitsAvailable, args.outfolder, True)
     
     
