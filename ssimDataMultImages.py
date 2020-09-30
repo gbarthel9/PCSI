@@ -29,8 +29,8 @@ def main():
     args = parser.parse_args()
     
     for filename in os.listdir(args.imageDir):
-        imgPath = os.path.join(args.imageDir, filename)
-        print(imgPath)
+        imgPath = os.path.join(args.imageDir, filename) #automatically adds a '/' because it is an os function (expects that)
+        #print(imgPath)
         ssimDataProg(imgPath, args.chromacomprange, args.bitdepthrange, args.numpacketsrange, args.bitsAvailable, args.saveOutputImages)
 
 
